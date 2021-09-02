@@ -15,11 +15,13 @@ public class TokenFilter implements GatewayFilter {
 
     @Autowired
     private TokenRetriever tokenRetriever;
+    @Autowired
+    private Credential credential;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         LOGGER.info("Retrieving the token...");
-        String token = tokenRetriever.getToken(new Credential().setUsername("abc").setPassword("cde"));
+        String token = tokenRetriever.getToken(credential);
 
         exchange.getRequest().mutate()
                 .headers(httpHeaders -> httpHeaders.set("token", token))

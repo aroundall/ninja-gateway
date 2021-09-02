@@ -1,2 +1,4 @@
 token-service:
   url: https://token-service.com/
+  username: abc
+  password: efg
