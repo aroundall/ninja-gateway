@@ -16,6 +16,8 @@ public class TokenFilter implements GatewayFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(GatewayFilter.class);
 
     @Autowired
+    private TokenRetriever tokenRetriever;
+    @Autowired
     private RestTemplate restTemplate;
 
     @Override
@@ -23,6 +25,10 @@ public class TokenFilter implements GatewayFilter {
         LOGGER.info("Retrieving the token...");
         ResponseEntity<String> token = restTemplate.getForEntity("http://www.baidu.com", String.class);
         LOGGER.info("Got the token");
+
+        LOGGER.info("Retrieving another token...");
+        Object anotherToken = tokenRetriever.getToken(3L);
+        LOGGER.info("Got that token");
         return chain.filter(exchange);
     }
 }
