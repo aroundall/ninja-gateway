@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -17,18 +15,17 @@ public class TokenFilter implements GatewayFilter {
 
     @Autowired
     private TokenRetriever tokenRetriever;
-    @Autowired
-    private RestTemplate restTemplate;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         LOGGER.info("Retrieving the token...");
-        ResponseEntity<String> token = restTemplate.getForEntity("http://www.baidu.com", String.class);
+        String token = tokenRetriever.getToken(new Credential().setUsername("abc").setPassword("cde"));
+
+        exchange.getRequest().mutate()
+                .headers(httpHeaders -> httpHeaders.set("token", token))
+                .build();
         LOGGER.info("Got the token");
 
-        LOGGER.info("Retrieving another token...");
-        Object anotherToken = tokenRetriever.getToken(3L);
-        LOGGER.info("Got that token");
         return chain.filter(exchange);
     }
 }
